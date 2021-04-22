@@ -1,0 +1,13 @@
+package com.cg.eisapp.service;
+
+
+import java.util.*;
+import com.cg.eisapp.beans.Employee;
+
+
+public interface IEmployeeService {
+     public Map<Integer,Employee> insertEmployee(Map<Integer,Employee> map , Employee e);
+     public Map<Integer,Employee> getDetailsSchemeBased(Map<Integer,Employee> map,String str);
+     public boolean deleteEmployee(Map<Integer,Employee> map ,int id);
+     public Map<Integer,Employee> displayEmployeeBasedOnSalary(Map<Integer,Employee> map,int range1,int range2);   
+}
