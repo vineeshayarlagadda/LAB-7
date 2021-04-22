@@ -1,0 +1,145 @@
+package com.cg.eisapp.ui;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Scanner;
+import com.cg.eisapp.service.*;
+import com.cg.eisapp.beans.Employee;
+
+
+
+public class EISMainClass {
+	IEmployeeService empService;
+	
+	public EISMainClass() {
+		empService = new EmployeeServiceImpl();
+	}
+	
+    public static void main(String[] args) {
+		EISMainClass obj = new EISMainClass();
+		Map<Integer,Employee> map = new HashMap<Integer,Employee>();
+		Employee e1 = new Employee(101,"Robb",50000,"Manager","Scheme A");
+		Employee e2 = new Employee(102,"Arya",10000,"System Associate","Scheme C");
+		Employee e3 = new Employee(103,"Imp",35000,"Programmer","Scheme B");
+		Employee e4 = new Employee(104,"Eleven",60000,"Manager","Scheme A");
+		
+		
+		
+		map.put(e1.getId(), e1);
+		map.put(e2.getId(), e2);
+		map.put(e3.getId(), e3);
+		map.put(e4.getId(), e4);
+		
+		
+		while(true) {
+			System.out.println("");
+			System.out.println("Enter the service : ");
+			System.out.println("1. Insert new Employee record");
+			System.out.println("2. Delete Employee record");
+			System.out.println("3. Get Employee details by Scheme");
+			System.out.println("4. Get Employee details based on salary range");
+			System.out.println("5. Exit");
+			
+			Scanner sc = new Scanner(System.in);
+            int option = sc.nextInt();
+            switch(option) {
+            case 1:
+            	map = obj.insertEmp(map);
+            	obj.displayDetails(map);
+            	break;
+            case 2:
+            	map = obj.deleteEmp(map);
+            	obj.displayDetails(map);
+            	break;
+            case 3:
+            	Map<Integer,Employee> filtered = obj.filteredEmp(map);
+            	obj.displayDetails(filtered);
+            	break;
+            case 4:
+            	map=obj.displayEmployeesBasedOnSalary(map);
+            	obj.displayDetails(map);
+            	break;
+            case 5:
+            	System.out.println("Thankyou for your visit.");
+            	System.exit(option);
+            }
+            
+		}
+		
+	}
+    
+    public void displayDetails(Map<Integer,Employee> map) {
+    	for(Map.Entry<Integer, Employee> entry:map.entrySet()){    
+            int key=entry.getKey();  
+            Employee e=entry.getValue();
+            System.out.println("==========================================================");
+            System.out.println( "ID-" + key + " Details:");  
+            System.out.println("Name :" +e.getName()+"\nSalary :"+e.getSalary()+"\nDesignation :"+e.getDesignation()+"\nInsurance Scheme :"+e.getInsuranceScheme());   
+        }    
+    }
+    
+    public Map<Integer,Employee> displayEmployeesBasedOnSalary(Map<Integer,Employee> map){
+    	Scanner sc=new Scanner(System.in);
+    	System.out.println("Enter the salary range : ");
+    	System.out.println("Enter the lower limit : ");
+    	int range1=sc.nextInt();
+    	System.out.println("Enter the upper limit : ");
+    	int range2=sc.nextInt();
+    	map=empService.displayEmployeeBasedOnSalary(map,range1,range2);
+    	return map;
+    }
+    
+    public Map<Integer,Employee> insertEmp(Map<Integer,Employee> map){
+    	Scanner sc1 = new Scanner(System.in);
+    	System.out.println("Enter the Employee Id :");
+    	int id = sc1.nextInt();
+    	System.out.println("Enter the Employee Name :");
+    	String name = sc1.next();
+    	System.out.println("Enter the Employee Salary :");
+    	int salary = sc1.nextInt();
+    	String designation = new String();
+    	String iScheme = new String();
+    	if(salary>5000 && salary<20000) {
+    		designation = "System Associate";
+    		iScheme = "Scheme C";
+    	}else if(salary>=20000 && salary<40000) {
+    		designation =  "Programmer";
+    		iScheme = "Scheme B";
+    	}else if(salary >= 40000) {
+    		designation =  "Manager";
+    		iScheme = "Scheme A";
+    	}else{
+    		designation =  "Clerk";
+    		iScheme = "No Scheme";
+    	}
+
+    	
+    	Employee e = new Employee(id,name,salary,designation,iScheme);
+    	map = empService.insertEmployee(map, e);
+        return map;
+    	
+    }
+    
+    public Map<Integer,Employee> deleteEmp(Map<Integer,Employee> map){
+    	System.out.println("Enter the Employee ID:");
+    	Scanner sc2 = new Scanner(System.in);
+    	int id = sc2.nextInt();
+    	if(empService.deleteEmployee(map, id)) {
+    		return map;
+    	}else {
+    		System.out.println("No employee with this ID");
+    		return map;
+    	}
+    }
+    
+    public Map<Integer,Employee> filteredEmp(Map<Integer,Employee> map){
+    	
+    	System.out.println("Enter the scheme :");
+    	Scanner sc3 = new Scanner(System.in);
+    	String scheme = sc3.nextLine();
+    	Map<Integer,Employee> result = new HashMap<Integer,Employee>();
+    	result = empService.getDetailsSchemeBased(map,scheme);
+    	return result;
+    }    
+}
